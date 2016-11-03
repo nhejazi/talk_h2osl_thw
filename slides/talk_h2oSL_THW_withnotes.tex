@@ -1,0 +1,248 @@
+\documentclass[12pt,t,handout]{beamer}
+\usepackage{graphicx}
+\setbeameroption{show notes}
+\setbeamertemplate{note page}[plain]
+\usepackage{listings}
+
+\def\notescolors{1}
+\input{header.tex}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% end of header
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% title info
+\title{TITLE GOES HERE}
+\author{\href{http://nimahejazi.org}{Nima Hejazi}}
+\institute{Division of Biostatistics \\ University of California, Berkeley}
+\date{\href{http://nimahejazi.org}{\tt \scriptsize \color{foreground} nimahejazi.org}
+\\[-4pt]
+\href{https://github.com/nhejazi}{\tt \scriptsize \color{foreground}
+github.com/nhejazi}
+\\[-4pt]
+\href{https://twitter.com/nshejazi}{\tt \scriptsize \color{foreground} @nshejazi}
+\\[2pt]
+}
+
+
+\begin{document}
+
+% title slide
+{
+\setbeamertemplate{footline}{} % no page number here
+\frame{
+  \titlepage
+
+  \vfill \hfill \includegraphics[height=6mm]{Figs/cc-zero.png} \vspace*{-1cm}
+
+  \note{These are slides for a talk I've given a whole bunch of times,
+    most recently at for the Computational Biology and Biostatistics
+    Summer Research Program (CBB) at UW-Madison on 7 June 2016.
+
+    Source: {\tt https://github.com/kbroman/Talk\_ReproRes} \\
+    Slides: {\tt http://bit.ly/CBB2016\_nonotes} \\
+    With notes: {\tt http://bit.ly/CBB2016\_wnotes}
+}
+}
+}
+
+
+\begin{frame}[fragile,c]{}
+
+\begin{center}
+\begin{minipage}[c]{9.3cm}
+\begin{semiverbatim}
+\lstset{basicstyle=\normalsize}
+\begin{lstlisting}[linewidth=9.3cm]
+ Karl -- this is very interesting,
+ however you used an old version of
+ the data (n=143 rather than n=226).
+
+ I'm really sorry you did all that
+ work on the incomplete dataset.
+
+ Bruce
+\end{lstlisting}
+\end{semiverbatim}
+\end{minipage}
+\end{center}
+
+\note{This is an edited version of an email I got from a collaborator,
+  in response to an analysis report that I had sent him.
+
+  I try to always include some brief data summaries at the start of
+  such reports. By doing so, he immediately saw that I had an old
+  version of the data.
+
+  Because I'd set things up carefully, I could just substitute in the
+  newer dataset, type ``{\tt make}'', and get the revised report.
+
+  This is a reproducibility success story. But it took me a long
+  time to get to this point.
+}
+\end{frame}
+
+
+\begin{frame}[c]{}
+\centering
+{\Large The results in Table 1 don't seem to \\[12pt]
+correspond to those in Figure 2.}
+
+\note{My computational life is not entirely rosy. This is the sort of
+  email that will freak me out.}
+\end{frame}
+
+
+\begin{frame}[c]{}
+\centerline{\Large In what order do I run these scripts?}
+
+\note{Sometimes the process of data file manipulation and data
+  cleaning gets spread across a bunch of scripts that need to be
+  executed in a particular order. Will I record this information? Is
+  it obvious what script does what?}
+\end{frame}
+
+
+\begin{frame}[c]{}
+\centerline{\Large Where did we get this data file?}
+
+\note{Record the provenance of all data or metadata files.}
+\end{frame}
+
+
+\begin{frame}[c]{}
+\centerline{\Large Why did I omit those samples?}
+
+\note{I may decide to omit a few samples. Will I record {\nhilit why}
+  I omitted those particular samples?}
+\end{frame}
+
+
+\begin{frame}[c]{}
+\centerline{\Large How did I make that figure?}
+
+\note{Sometimes, in the midst of a bout of exploratory data analysis,
+  I'll create some exciting graph and have a heck of a time
+  reproducing it afterwards.}
+\end{frame}
+
+
+\begin{frame}[c]{}
+\centerline{\Large ``Your script is now giving an error."}
+
+\note{It was working last week. Well, last month, at least.
+
+How easy is it to go back through that script's history to see where
+and why it stopped working?}
+\end{frame}
+
+
+\begin{frame}[c]{}
+\centerline{\Large ``The attached is similar to the code we used."}
+
+\note{From an email in response to my request for code used for a
+  paper.}
+\end{frame}
+
+
+\begin{frame}[c]{7. Use version control (git/GitHub)}
+
+\only<1>{\addtocounter{framenumber}{-1}}
+
+\vspace*{3mm}
+
+\centering
+
+%\only<1|handout 0>{\figh{Figs/example_history}{0.80}}
+%\only<2>{\figh{Figs/example_commit}{0.80}}
+
+\note{
+  git has a steep learning curve, but ultimately I think you'll find
+  it really helpful.
+
+  The big selling point is in collaboration: merging changes from
+  collaborators, and keep your work synchronized.
+
+  Longer term, there's great value in having the entire history of
+  changes to your project. If something stops working, you can go
+  back to any point in that history to see when it stopped working and
+  why.
+
+  With git, you can also work on new features or analyses without fear
+  of breaking the parts that are currently working well.
+}
+\end{frame}
+
+
+\begin{frame}{8. License your software}
+
+\vspace{60pt}
+
+\centerline{\large Pick a license, any license}
+
+\vspace{18pt}
+
+\hfill
+{\textendash} \href{http://blog.codinghorror.com/pick-a-license-any-license/}{Jeff Atwood}
+
+\note{
+  If you don't pick a license for your software, no one else can use it.
+
+  So if you want to distribute your code so that others can reproduce
+  your analyses, you need to pick a license, any license.
+
+  I choose between the MIT license and the GPL.
+
+  Don't use the Creative Commons licenses for code. But feel free to
+  use them for other things.
+}
+\end{frame}
+
+
+\begin{frame}[c]{Summary}
+
+  \begin{enumerate}
+  \itemsep12pt
+  \item Organize your data \& code
+  \item Everything with a script
+  \item Automate the process (GNU Make)
+  \item Turn scripts into reproducible reports
+  \item Turn repeated code into functions
+  \item Create a package/module
+  \item Use version control (git/GitHub)
+  \item Pick a license, any license
+  \end{enumerate}
+
+  \note{
+    It's always good to include a summary.
+}
+\end{frame}
+
+
+\begin{frame}[c]{}
+
+\Large
+
+Slides: \href{http://bit.ly/CBB2016_wnotes}{\tt bit.ly/CBB2016\_wnotes} \quad
+\includegraphics[height=5mm]{Figs/cc-zero.png}
+
+\vspace{10mm}
+
+\href{http://nimahejazi.org}{\tt nimahejazi.org}
+
+\vspace{10mm}
+
+\href{https://github.com/nhejazi}{\tt github.com/nhejazi}
+
+\vspace{10mm}
+
+\href{https://twitter.com/nhejazi7}{\tt @nhejazi7}
+
+
+\note{
+  Here's where you can find me, as well as the slides for this talk.
+}
+\end{frame}
+
+
+\end{document}
