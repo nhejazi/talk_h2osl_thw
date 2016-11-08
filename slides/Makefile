@@ -21,10 +21,10 @@ $(TITLE)_withnotes.tex: $(TITLE).tex Ruby/createVersionWithNotes.rb
 
 web: $(TITLE).pdf $(TITLE)_withnotes.pdf
 	scp $(TITLE).pdf \
-		nhejazi@arwen.berkeley.edu:/mirror/data/pub/users/nhejazi/pres/$(TITLE).pdf
+		nhejazi@arwen.berkeley.edu:/mirror/data/pub/users/nhejazi/present/$(TITLE).pdf
 	scp $(TITLE)_withnotes.pdf \
-		nhejazi@arwen.berkeley.edu:/mirror/data/pub/users/nhejazi/pres/$(TITLE)_withnotes.pdf
+		nhejazi@arwen.berkeley.edu:/mirror/data/pub/users/nhejazi/present/$(TITLE)_withnotes.pdf
 	ssh nhejazi@arwen.berkeley.edu \
-		'chmod go+r /mirror/data/pub/users/nhejazi/pres/$(TITLE).pdf'
+		'chmod go+r /mirror/data/pub/users/nhejazi/present/$(TITLE).pdf'
 	ssh nhejazi@arwen.berkeley.edu \
-		'chmod go+r /mirror/data/pub/users/nhejazi/pres/$(TITLE)_withnotes.pdf'
+		'chmod go+r /mirror/data/pub/users/nhejazi/present/$(TITLE)_withnotes.pdf'

@@ -1,4 +1,4 @@
-# "Ensemble (Machine) Learning with Super Learner and H2O in R"
+# "Ensemble Learning with Super Learner and H2O in R"
 
 > Materials for a presentation given at a meeting of The Hacker Within, at the
 > University of California, Berkeley
@@ -23,4 +23,5 @@ Science]() on 6 December 2016.
 
 &copy; 2016 [Nima Hejazi](http://nimahejazi.org) & [Evan Muzzall]()
 
-This repository is licensed under the MIT license. See `LICENSE` for details.
+The contents of this repository are distributed under the MIT license. See file
+`LICENSE` for details.
