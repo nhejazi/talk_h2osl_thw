@@ -1,5 +1,10 @@
 # "Ensemble Learning with Super Learner and H2O in R"
 
+[![MIT
+license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
+[![Join the chat at
+https://gitter.im/h2oSL-THW-2016/Lobby](https://badges.gitter.im/h2oSL-THW-2016/Lobby.svg)](https://gitter.im/h2oSL-THW-2016/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 > Materials for a presentation given at a meeting of The Hacker Within, at the
 > University of California, Berkeley
 
