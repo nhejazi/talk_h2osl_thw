@@ -1,4 +1,4 @@
-# "Ensemble Learning with Super Learner and H2O in R"
+# Ensemble Learning with Super Learner and H2O in R
 
 [![MIT
 license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](http://opensource.org/licenses/MIT)
@@ -30,6 +30,12 @@ December 2016.
 
 * ["Introduction to Practical Ensemble Learning" (presentation), E. LeDell,
   2015](http://www.stat.berkeley.edu/~ledell/docs/dlab_ensembles.pdf)
+
+* ["Machine Learning Algorithmic Deep Dive" (presentation at UseR!), E. LeDell,
+  2016](https://github.com/ledell/useR-machine-learning-tutorial)
+
+* ["Machine Learning with `scikit-learn`" (presentation at THW), R. Terman and
+  C. Hench, 2016](http://www.thehackerwithin.org/berkeley/posts/scikit-learn)
 
 ---
 
