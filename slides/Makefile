@@ -1,4 +1,4 @@
-TITLE = talk_h2oSL_THW
+TITLE = 2016_talk_h2oSL_THW
 
 $(TITLE).pdf: $(TITLE).tex header.tex
 	xelatex $<
