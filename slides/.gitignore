@@ -1,2 +1,2 @@
 *.{aux,log,nav,out,snm,toc,vrb}
-*.pdf
+*_talk_*.pdf

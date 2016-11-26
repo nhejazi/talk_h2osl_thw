@@ -86,7 +86,8 @@
           \textit{metalearning} algorithm, ensemble methods can approximate
           complex functional relationships.
     \item When the true functional relationship is not in the set of base
-          learning algorithms, ensemble methods approximate the function well.
+          learning algorithms, ensemble methods approximate the true function
+          well.
     \item \textit{n.b.}, ensemble methods can, even asymptotically, perform only
           as well as the best weighted combination of the candidate learners.
   \end{itemize}
@@ -96,7 +97,7 @@
   der Laan \textit{et al.}). In this talk, we will focus on the elementary
   theoretical properties of ``Super Learner'', with an eye towards application.
 
-  Theoretically, a range of different algorithms can be usedin the metalearning
+  Theoretically, a range of different algorithms can be used in the metalearning
   step; however, in practice, often, logistic regression is used.
 }
 \end{frame}
@@ -114,16 +115,22 @@
 
   \begin{itemize}
     \itemsep12pt
-    \item \textbf{Bagging} -- reduces variance and increases accuracy; robust
-          against outliers; often used with decision trees (\textit{e.g.},
-          Random Forest).
-    \item \textbf{Boosting} -- reduces variance and increases accuracy; not
-          robust against outliers or noise; accomodates any loss function.
-    \item \textbf{Stacking} -- used in combining ``strong'' learners; requires
-          a \textit{metalearning} algorithm to combine the set of learners.
+    \item \underline{\textbf{Bagging}} -- reduces variance and increases
+          accuracy; robust against outliers; often used with decision trees
+          (\textit{i.e.}, Random Forest).
+    \item \underline{\textbf{Boosting}} -- reduces variance and increases
+          accuracy; not robust against outliers or noise; accomodates any loss
+          function.
+    \item \underline{\textbf{Stacking}} -- used in combining ``strong''
+          learners; requires a \textit{metalearning} algorithm to combine the
+          set of learners.
   \end{itemize}
 
 \note{
+  While a number of different strategies exist for combining various types of
+  learning algorithms, most modern methods rely on stacking to produce powerful
+  ensemble learners. These sorts of ensemble learners are what you want to use
+  to win Kaggle competitions!
 }
 \end{frame}
 
@@ -136,88 +143,129 @@
 
   \begin{itemize}
     \itemsep12pt
-    \item 1996 paper ``Stacked Regressions'' (L. Breimen) introduced the notion
+    \item 1996 paper ``Stacked Regressions'' (L. Breiman) introduced the notion
           of model stacking using k-fold cross-validation, the precursor to the
           modern Super Learner algorithm.
     \item 2007 paper ``Super Learner'' (van der Laan \textit{et al.}) worked out
           theoretical details on the optimality of stacking. Before this, the
           reasons for the superb performance of stacking were unknown.
     \item The Super Learner algorithm learns the optimal combination of the
-          base learner fits. The above paper proved the asymptotic optimality
-          of this strategy.
+          base learner fits in a manner that is provably asymptotic optimal.
   \end{itemize}
 
 \note{
+  The Super Learner algorithm allows researchers to use multiple algorithms to
+  outperform a single algorithm in realistic non-parametric and semi-parametric
+  statistical models that are based on actual knowledge.
+
+  The term algorithm is used very loosely to describe any mapping from the data
+  into a predictor. This can range from a simple logistic regression to more
+  complex algorithms such as neural nets.
 }
 \end{frame}
 
 
 \begin{frame}[c]{5. Interlude: Cross-Validation}
 
-\vspace*{3mm}
+\vspace*{2mm}
 
 \centering
 
 \includegraphics[scale=0.45]{Figs/cv.pdf}
 
+\textit{The validation set rotates V times such that each set is used as the
+validation set once.}
+
 \note{
+  Cross-validation solves the problem of having many algorithms, and not
+  knowing which one to use and helps us avoid overfitting.
+
+  For any given fold, $V − 1$ sets will comprise the training set and the
+  remaining $1$ set is the validation set.
+
+  The observations in the training set are used to construct (or train) the
+  candidate estimators.
+
+  The observations in the validation set are used to assess the performance
+  (\textit{i.e.}, risk) of the candidate algorithms.
 }
 \end{frame}
 
 
 \begin{frame}[c]{6. Optimality of Super Learner}
 
+\vspace*{1mm}
+
+\centering
+
+  For a random variable $O = (W, A, Y)$, let the \textbf{oracle selector} be a
+  rule that picks the algorithm with the lowest cross-validated risk under the
+  \textit{true probability distribution} $P_{0}$. The \textbf{oracle selector}
+  is unknown because it depends on observed data \underline{and} the truth.
+
+\vspace{1em}
+
+  Asymptotic results prove that in realistic scenarios (where none of the
+  algorithms represent the true relationship), the ``discrete super learner''
+  performs \textit{asymptotically as well as} the oracle selector (the best
+  estimator given the algorithms in the collection).
+
+\note{
+  To clarify, theory shows that that the discrete super learner performs as
+  well as the oracle selector, up to a second order term. The loss function
+  must be bounded, and then we will perform as well as the algorithm that is
+  the risk minimizer of the expected loss function. The number of algorithms in
+  the library can grow with sample size.
+}
+\end{frame}
+
+
+\begin{frame}[c]{7. The Discrete Super Learner}
+
 \vspace*{3mm}
 
 \centering
 
-  \begin{itemize}
-    \itemsep12pt
-    \item j
-    \item j
-    \item j
-  \end{itemize}
+\includegraphics[scale=0.45]{Figs/discreteSL.pdf}
 
 \note{
 }
 \end{frame}
 
 
-\begin{frame}[c]{7. The Super Learner Algorithm}
+\begin{frame}[c]{8. The Super Learner Algorithm}
 
 \vspace*{3mm}
 
 \centering
 
-\includegraphics[scale=0.4]{Figs/sl.pdf}
+\includegraphics[scale=0.4]{Figs/SL.pdf}
 
 \note{
   \textit{Cross-validate Base Learners:}
     \begin{itemize}
-      \itemsep12pt
-      \item Perform k-fold cross-validation on each of these learners and
-            collect the cross-validated predicted values from each of the $L$
-            algorithms.
+      \itemsep10pt
+      \item Perform k-fold cross-validation on each learner and collect the
+            cross-validated predicted values from each of the $L$ algorithms.
       \item The $N$ cross-validated predicted values from each of the $L$
-            algorithms can be combined to form a new $N \times L$ matrix. This
-            matrix, along wtih the original response vector, is called the
-            "level-one" data.
+            algorithms can be combined to form a new $N \times L$ matrix. Call
+            this matrix, with the original response vector, ``level-one'' data.
     \end{itemize}
 
   \textit{Metalearning:}
     \begin{itemize}
-      \itemsep12pt
-      \item Train the metalearning algorithm on the level-one data.
+      \itemsep10pt
+      \item Train the metalearning algorithm on the ``level-one'' data.
       \item Train each of the $L$ base algorithms on the full training set.
-      \item The "ensemble model" consists of the $L$ base learning models and
-            the metalearning model, which can then be used to generate
-            predictions on a test set.
+      \item The ``ensemble model'' consists of the $L$ base learning models and
+            the metalearning model, which can be used to generate predictions on
+            a test set.
     \end{itemize}
 }
 \end{frame}
 
 
-\begin{frame}[c]{8. R Package: ``SuperLearner''}
+\begin{frame}[c]{9. R Package: ``SuperLearner''}
 
 \vspace*{3mm}
 
@@ -237,7 +285,7 @@
 \end{frame}
 
 
-\begin{frame}{9. R Package: ``h2oEnsemble''}
+\begin{frame}{10. R Package: ``h2oEnsemble''}
 
 \vspace*{3mm}
 
