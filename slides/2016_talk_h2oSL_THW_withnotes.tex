@@ -3,6 +3,7 @@
 \setbeameroption{show notes}
 \setbeamertemplate{note page}[plain]
 \usepackage{listings}
+\usepackage{url}
 
 \def\notescolors{1}
 \input{header.tex}
@@ -12,19 +13,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % title info
-\title{TITLE GOES HERE}
-\author{\href{http://nimahejazi.org}{Nima Hejazi}}
-\institute{Division of Biostatistics \\ University of California, Berkeley}
-\date{\href{http://nimahejazi.org}{\tt \scriptsize \color{foreground} nimahejazi.org}
-\\[-4pt]
-\href{https://github.com/nhejazi}{\tt \scriptsize \color{foreground}
-github.com/nhejazi}
-\\[-4pt]
-\href{https://twitter.com/nshejazi}{\tt \scriptsize \color{foreground} @nshejazi}
-\\[2pt]
-}
+\title{A Practical Tour of Super Learning}
+\author{Nima Hejazi \inst{1} \and Evan Muzzall \inst{2}}
+\institute{\inst{1} Division of Biostatistics, University of
+                    California, Berkeley
+           \and
+           \inst{2} D-Lab, University of California, Berkeley}
 
-
+\date{ \underline{slides}: \url{https://goo.gl/wWa9QC}}
 \begin{document}
 
 % title slide
@@ -35,166 +31,235 @@ github.com/nhejazi}
 
   \vfill \hfill \includegraphics[height=6mm]{Figs/cc-zero.png} \vspace*{-1cm}
 
-  \note{These are slides for a talk I've given a whole bunch of times,
-    most recently at for the Computational Biology and Biostatistics
-    Summer Research Program (CBB) at UW-Madison on 7 June 2016.
+  \note{These are slides from a presentation on practical ensemble learning with
+    the Super Learner and h2oEnsemble packages for the R language, most
+    recently presented at a meeting of The Hacker Within, at the Berkeley
+    Institute for Data Science at UC Berkeley, on 6 December 2016.
 
-    Source: {\tt https://github.com/kbroman/Talk\_ReproRes} \\
-    Slides: {\tt http://bit.ly/CBB2016\_nonotes} \\
-    With notes: {\tt http://bit.ly/CBB2016\_wnotes}
+    source: {\tt https://github.com/nhejazi/talk-h2oSL-THW-2016} \\
+    slides: {\tt https://goo.gl/CXC2FF} \\
+    with notes: {\tt http://goo.gl/wWa9QC}
 }
 }
 }
 
 
-\begin{frame}[fragile,c]{}
+\begin{frame}[fragile,c]{1. Ensemble Learning -- What?}
 
 \begin{center}
 \begin{minipage}[c]{9.3cm}
 \begin{semiverbatim}
 \lstset{basicstyle=\normalsize}
-\begin{lstlisting}[linewidth=9.3cm]
- Karl -- this is very interesting,
- however you used an old version of
- the data (n=143 rather than n=226).
+\begin{lstlisting}[linewidth=10.0cm]
+ In statistics and machine learning,
+ ensemble methods use multiple
+ learning algorithms to obtain better
+ predictive performance than could be
+ obtained from any of the constituent
+ learning algorithms alone.
 
- I'm really sorry you did all that
- work on the incomplete dataset.
-
- Bruce
+ - Wikipedia, November 2016
 \end{lstlisting}
 \end{semiverbatim}
 \end{minipage}
 \end{center}
 
-\note{This is an edited version of an email I got from a collaborator,
-  in response to an analysis report that I had sent him.
-
-  I try to always include some brief data summaries at the start of
-  such reports. By doing so, he immediately saw that I had an old
-  version of the data.
-
-  Because I'd set things up carefully, I could just substitute in the
-  newer dataset, type ``{\tt make}'', and get the revised report.
-
-  This is a reproducibility success story. But it took me a long
-  time to get to this point.
+\note{
+  This rather elementary definition of ``ensemble learning'' encapsulates quite
+  well the core notions necessary to understand why we might be interested in
+  optimizing such procedures. In particular, we will see that a weighted
+  collection of individual learning algorithms can not only outperform other
+  algorithms in practice but also has been shown to be theoretically optimal.
 }
 \end{frame}
 
 
-\begin{frame}[c]{}
-\centering
-{\Large The results in Table 1 don't seem to \\[12pt]
-correspond to those in Figure 2.}
-
-\note{My computational life is not entirely rosy. This is the sort of
-  email that will freak me out.}
-\end{frame}
-
-
-\begin{frame}[c]{}
-\centerline{\Large In what order do I run these scripts?}
-
-\note{Sometimes the process of data file manipulation and data
-  cleaning gets spread across a bunch of scripts that need to be
-  executed in a particular order. Will I record this information? Is
-  it obvious what script does what?}
-\end{frame}
-
-
-\begin{frame}[c]{}
-\centerline{\Large Where did we get this data file?}
-
-\note{Record the provenance of all data or metadata files.}
-\end{frame}
-
-
-\begin{frame}[c]{}
-\centerline{\Large Why did I omit those samples?}
-
-\note{I may decide to omit a few samples. Will I record {\nhilit why}
-  I omitted those particular samples?}
-\end{frame}
-
-
-\begin{frame}[c]{}
-\centerline{\Large How did I make that figure?}
-
-\note{Sometimes, in the midst of a bout of exploratory data analysis,
-  I'll create some exciting graph and have a heck of a time
-  reproducing it afterwards.}
-\end{frame}
-
-
-\begin{frame}[c]{}
-\centerline{\Large ``Your script is now giving an error."}
-
-\note{It was working last week. Well, last month, at least.
-
-How easy is it to go back through that script's history to see where
-and why it stopped working?}
-\end{frame}
-
-
-\begin{frame}[c]{}
-\centerline{\Large ``The attached is similar to the code we used."}
-
-\note{From an email in response to my request for code used for a
-  paper.}
-\end{frame}
-
-
-\begin{frame}[c]{7. Use version control (git/GitHub)}
-
-\only<1>{\addtocounter{framenumber}{-1}}
+\begin{frame}[c]{2. Ensemble Learning -- Why?}
 
 \vspace*{3mm}
 
 \centering
 
-%\only<1|handout 0>{\figh{Figs/example_history}{0.80}}
-%\only<2>{\figh{Figs/example_commit}{0.80}}
-
+  \begin{itemize}
+    \itemsep12pt
+    \item Ensemble methods outperform individual (base) learning algorithms.
+    \item By combining a set of individual learning algorithms using a
+          \textit{metalearning} algorithm, ensemble methods can approximate
+          complex functional relationships.
+    \item When the true functional relationship is not in the set of base
+          learning algorithms, ensemble methods approximate the function well.
+    \item \textit{n.b.}, ensemble methods can, even asymptotically, perform only
+          as well as the best weighted combination of the candidate learners.
+  \end{itemize}
 \note{
-  git has a steep learning curve, but ultimately I think you'll find
-  it really helpful.
+  A variety of techniques exist for ensemble learning, ranging from the classic
+  ``random forest'' (of Leo Breiman) to ``xgboost'' to ``Super Learner'' (van
+  der Laan \textit{et al.}). In this talk, we will focus on the elementary
+  theoretical properties of ``Super Learner'', with an eye towards application.
 
-  The big selling point is in collaboration: merging changes from
-  collaborators, and keep your work synchronized.
-
-  Longer term, there's great value in having the entire history of
-  changes to your project. If something stops working, you can go
-  back to any point in that history to see when it stopped working and
-  why.
-
-  With git, you can also work on new features or analyses without fear
-  of breaking the parts that are currently working well.
+  Theoretically, a range of different algorithms can be usedin the metalearning
+  step; however, in practice, often, logistic regression is used.
 }
 \end{frame}
 
 
-\begin{frame}{8. License your software}
+\begin{frame}[c]{3. Ensemble Learning -- How?}
 
-\vspace{60pt}
+\vspace*{3mm}
 
-\centerline{\large Pick a license, any license}
+\textit{Common strategies for performing ensemble learning:}
 
-\vspace{18pt}
+\vspace{1em}
 
-\hfill
-{\textendash} \href{http://blog.codinghorror.com/pick-a-license-any-license/}{Jeff Atwood}
+\centering
+
+  \begin{itemize}
+    \itemsep12pt
+    \item \textbf{Bagging} -- reduces variance and increases accuracy; robust
+          against outliers; often used with decision trees (\textit{e.g.},
+          Random Forest).
+    \item \textbf{Boosting} -- reduces variance and increases accuracy; not
+          robust against outliers or noise; accomodates any loss function.
+    \item \textbf{Stacking} -- used in combining ``strong'' learners; requires
+          a \textit{metalearning} algorithm to combine the set of learners.
+  \end{itemize}
 
 \note{
-  If you don't pick a license for your software, no one else can use it.
+}
+\end{frame}
 
-  So if you want to distribute your code so that others can reproduce
-  your analyses, you need to pick a license, any license.
 
-  I choose between the MIT license and the GPL.
+\begin{frame}[c]{4. Introduction to Super Learner}
 
-  Don't use the Creative Commons licenses for code. But feel free to
-  use them for other things.
+\vspace*{3mm}
+
+\centering
+
+  \begin{itemize}
+    \itemsep12pt
+    \item 1996 paper ``Stacked Regressions'' (L. Breimen) introduced the notion
+          of model stacking using k-fold cross-validation, the precursor to the
+          modern Super Learner algorithm.
+    \item 2007 paper ``Super Learner'' (van der Laan \textit{et al.}) worked out
+          theoretical details on the optimality of stacking. Before this, the
+          reasons for the superb performance of stacking were unknown.
+    \item The Super Learner algorithm learns the optimal combination of the
+          base learner fits. The above paper proved the asymptotic optimality
+          of this strategy.
+  \end{itemize}
+
+\note{
+}
+\end{frame}
+
+
+\begin{frame}[c]{5. Interlude: Cross-Validation}
+
+\vspace*{3mm}
+
+\centering
+
+\includegraphics[scale=0.45]{Figs/cv.pdf}
+
+\note{
+}
+\end{frame}
+
+
+\begin{frame}[c]{6. Optimality of Super Learner}
+
+\vspace*{3mm}
+
+\centering
+
+  \begin{itemize}
+    \itemsep12pt
+    \item j
+    \item j
+    \item j
+  \end{itemize}
+
+\note{
+}
+\end{frame}
+
+
+\begin{frame}[c]{7. The Super Learner Algorithm}
+
+\vspace*{3mm}
+
+\centering
+
+\includegraphics[scale=0.4]{Figs/sl.pdf}
+
+\note{
+  \textit{Cross-validate Base Learners:}
+    \begin{itemize}
+      \itemsep12pt
+      \item Perform k-fold cross-validation on each of these learners and
+            collect the cross-validated predicted values from each of the $L$
+            algorithms.
+      \item The $N$ cross-validated predicted values from each of the $L$
+            algorithms can be combined to form a new $N \times L$ matrix. This
+            matrix, along wtih the original response vector, is called the
+            "level-one" data.
+    \end{itemize}
+
+  \textit{Metalearning:}
+    \begin{itemize}
+      \itemsep12pt
+      \item Train the metalearning algorithm on the level-one data.
+      \item Train each of the $L$ base algorithms on the full training set.
+      \item The "ensemble model" consists of the $L$ base learning models and
+            the metalearning model, which can then be used to generate
+            predictions on a test set.
+    \end{itemize}
+}
+\end{frame}
+
+
+\begin{frame}[c]{8. R Package: ``SuperLearner''}
+
+\vspace*{3mm}
+
+\centering
+
+  \begin{itemize}
+    \itemsep12pt
+    \item Implements the Super Learner prediction method (stacking) and
+          contains a library of prediction algorithms to be used in the Super
+          Learner.
+    \item Provides a clean interface to numerous algorithms in R and defines a
+          consistent API for extensibility.
+  \end{itemize}
+
+\note{
+}
+\end{frame}
+
+
+\begin{frame}{9. R Package: ``h2oEnsemble''}
+
+\vspace*{3mm}
+
+\centering
+
+\textit{Extension to the ``h2o'' R package that allows the user to train an
+ensemble in the H2O cluster using any of the supervised machine learning
+algorithms in H2O.}
+
+\vspace{1em}
+
+  \begin{itemize}
+    \itemsep12pt
+    \item Uses data-distributed and parallelized Java-based algorithms for the
+          ensemble.
+    \item All training and data processing are performed in the
+          high-performance H2O cluster.
+    \item Supports regression and binary classification.
+  \end{itemize}
+
+\note{
 }
 \end{frame}
 
@@ -203,18 +268,18 @@ and why it stopped working?}
 
   \begin{enumerate}
   \itemsep12pt
-  \item Organize your data \& code
-  \item Everything with a script
-  \item Automate the process (GNU Make)
-  \item Turn scripts into reproducible reports
-  \item Turn repeated code into functions
-  \item Create a package/module
-  \item Use version control (git/GitHub)
-  \item Pick a license, any license
+    \item Ensemble methods combine individual learning algorithms to approximate
+          complex relationships.
+    \item Super Learning (stacking) represents an optimal system for combining
+          individual learning algorithms into an ensemble learner.
+    \item The ``SuperLearner'' R package provides a well-maintained
+          implementation of the the Super Learner algorithm.
+    \item The ``h2oEnsemble'' R package provides access to a range of ensemble
+          methods, developed by \href{http://www.h2o.ai}{\tt H2O.ai}.
   \end{enumerate}
 
   \note{
-    It's always good to include a summary.
+    Just a summary of what we discussed today.
 }
 \end{frame}
 
@@ -223,24 +288,16 @@ and why it stopped working?}
 
 \Large
 
-Slides: \href{http://bit.ly/CBB2016_wnotes}{\tt bit.ly/CBB2016\_wnotes} \quad
+Slides: \url{http://goo.gl/wWa9QC} \quad
 \includegraphics[height=5mm]{Figs/cc-zero.png}
 
 \vspace{10mm}
 
-\href{http://nimahejazi.org}{\tt nimahejazi.org}
-
-\vspace{10mm}
-
-\href{https://github.com/nhejazi}{\tt github.com/nhejazi}
-
-\vspace{10mm}
-
-\href{https://twitter.com/nhejazi7}{\tt @nhejazi7}
-
+\href{https://github.com/nhejazi/talk-h2oSL-THW-2016}
+{\tt GitHub: nhejazi/talk-h2oSL-THW-2016}
 
 \note{
-  Here's where you can find me, as well as the slides for this talk.
+  Here's where you can find the resources prepared for this talk.
 }
 \end{frame}
 
