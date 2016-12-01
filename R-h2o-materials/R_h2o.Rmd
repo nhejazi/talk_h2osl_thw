@@ -1,0 +1,282 @@
+---
+title: "Ensemble (Machine) Learning with SuperLearner and H2O in R"
+author: "Nima Hejazi and Evan Muzzall"
+date: "12/6//2016"
+output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Learning objectives  
+0.  UC Berkeley Social Sciences Data Laboratory (D-Lab)  
+1.  H2O installation  
+2.  Help  
+3.  Initialize an H2O cluster  
+3.1   H2O Flow  
+4.  Load data  
+4.1   Split data  
+5.  Fit a random forest model  
+5.1   Grid search  
+6.  The "h2oEnsemble" R package  
+6.1   Model performance  
+7.  Model stacking - random forest, gradient boosted machine, and elastic net regression  
+
+CHALLENGE: can you plug in the Pima Diabetes dataset and follow this script? 
+
+# 0.  UC Berkeley Social Sciences Data Laboratory (D-Lab)
+The D-Lab provides a variety of free services to UC Berkeley students and staff. 
+[D-Lab services](http://dlab.berkeley.edu/services)  
+[D-Lab calendar](http://dlab.berkeley.edu/calendar-node-field-date)
+
+# 1.  H2O Installation
+These installations are required to make H2O work in RStudio. Click the links to visit the download pages.
+1. [Download RStudio](https://www.rstudio.com/products/rstudio/download/)  
+2. [Download Java Runtime Environment](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)  
+3. [Download H2O for R and dependencies (click the "Use H2O directly from R" tab and follow the copy/paste instructions)](http://h2o-release.s3.amazonaws.com/h2o/rel-turing/10/index.html)    
+4. Install "devtools" and "h2oEnsemble"" R packages.  
+
+```{r, eval=FALSE}
+# The following two commands remove any previously installed H2O packages for R.
+if ("package:h2o" %in% search()) { detach("package:h2o", unload=TRUE) }
+if ("h2o" %in% rownames(installed.packages())) { remove.packages("h2o") }
+
+# Next, we download packages that H2O depends on.
+pkgs <- c("methods","statmod","stats","graphics","RCurl","jsonlite","tools","utils")
+for (pkg in pkgs) {
+if (! (pkg %in% rownames(installed.packages()))) { install.packages(pkg, repos = "http://cran.rstudio.com/") }
+}
+
+# Now we download, install and call the H2O package for R.
+install.packages("h2o", type="source", repos=(c("http://h2o-release.s3.amazonaws.com/h2o/rel-turing/10/R")))
+
+# Install the "devtools" R package.
+install.packages(c("devtools")) 
+
+# Install the "h2oEnsemble" R package.
+install_github("h2oai/h2o-3/h2o-r/ensemble/h2oEnsemble-package")
+
+# Load packages
+library(h2o)
+library(devtools)
+library(h2oEnsemble)
+```
+
+# 2.  Help
+Today's example can be found on the [H2O World 2015 Training web page](http://learn.h2o.ai/content/tutorials/ensembles-stacking/)  
+
+View the H2O [home page](http://www.h2o.ai/), [help documentation](http://docs.h2o.ai/h2o/latest-stable/h2o-docs/welcome.html), and [tutorials](https://github.com/h2oai/h2o-tutorials)  
+
+Learn more about the [H2O software architecture](http://h2o-release.s3.amazonaws.com/h2o/rel-noether/4/docs-website/developuser/h2o_stack.html)  
+
+# 3 Initialize an H2O cluster
+```{r, eval=FALSE}
+?h2o.init
+?h2o.shutdown
+?h2o.removeAll
+```
+Initialize an H2O cluster with `h2o.init()`. `nthreads=` and `max_mem_size=` allow you to specify the number of cores and memory to be designated for your cloud-based operations.
+
+```{r}
+library(h2o)
+localH2O = h2o.init(nthreads=-2, max_mem_size="2G")
+```
+
+Commands such as `h2o.shutdown()` and `h2o.removeAll()` are used to terminate and clear your H20 cluster instance.
+
+# 3.1 H20 Flow
+H20 Flow is a GUI for managing your H20 data and models. After initializing a cluster, type `localhost:54321` in your preferred web browser to open the interface.
+
+# 4.  Load data
+```{r, eval=FALSE}
+?h2o.importFile
+?as.h2o
+```
+
+`h2o.importFile()` and `xxx()` are common ways to get data into H2O.  
+
+We will also use the "BreastCancer" dataset for the H2O example today.
+```{r}
+getwd()
+bc <- h2o.importFile(path=normalizePath("./BreastCancer.csv"))
+dim(bc)
+bc
+```
+
+Visit the H2O Flow page in your browser and click `getFrames`. Our data has appeared!  
+
+Click on the variable names to view their summaries.  
+
+# 4.1 Split data
+```{r, eval=FALSE}
+?h2o.splitFrame
+```
+Similar to data splitting operations in "caret" and "SuperLearner" we can split our dataset into training and test (and validation if necessary) frame.  
+
+Notice that we only have to specify the percentage of data we want to include in the training set (0.70) and validation set (0.15) - H2O will automatically parse the other 0.15 into the test set. The `seed=` argument allows us to set the seed within our splitting function. 
+```{r}
+splits <- h2o.splitFrame(bc, c(0.70, 0.15), seed=1) 
+train <- h2o.assign(splits[[1]], "train")   
+valid <- h2o.assign(splits[[2]], "valid")   
+test <- h2o.assign(splits[[3]], "test")   
+
+# Take a peek at our training and test sets
+train
+valid
+test
+```
+Again, check your H2O Flow page - "train", "valid", and "test" now also appear!  
+
+Now we can specify our dependent/outcome/target variable `y` (benign or malignant tumor "Class") and independent/predictor variables `x` (all other variables except "Class"). Since our dependent variable is binary, we also specify a "binomial" class distribution, and we will set our number of cross validation folds to 5. 
+```{r}
+y <- "Class"
+x <- setdiff(names(train), y)
+family <- "binomial"
+nfolds <- 5
+```
+
+H2O requires that our dependent variable is a factor, so we coerce them to factor data types:
+```{r}
+train[,y] <- as.factor(train[,y])
+valid[,y] <- as.factor(valid[,y])
+test[,y] <- as.factor(test[,y])
+```
+
+# 5.  Fit a random forest model
+Before we utilize enemble and stacked methods for model comparison, let us first explore a random forest model to illustrate some of the parameters that can be manipulated.  
+
+Random forests are decision tree models that are robust to overfitting and do not require pruning like decision trees often do.
+```{r}
+rf_1 <- h2o.randomForest(
+  training_frame = train, 
+  validation_frame = valid,
+  x=2:10, 
+  y=11, 
+  model_id = "rf_1",
+  ntrees = 200, 
+  stopping_rounds = 2,
+  score_each_iteration = TRUE,
+  seed = 1,
+  nfolds=nfolds,
+  fold_assignment = "Modulo") 
+# call rf_1 to view output
+h2o.auc(rf_1) # view AUC
+```
+Click `getModels` in H2O flow to view the random forest model.  
+
+Click a model to see its diagnostic plots.  
+
+# 5.1 Grid search
+Grid searching is a handy feature when you want to compare the same model simultaneously albeit with differently tunings.  
+
+##### Cartesian grid search
+```{r}
+hidden_opt <- list(c(200,200), c(100, 300, 100), c(500,500))
+l1_opt <- c(1e-5, 1e-7)
+hyper_params <- list(hidden = hidden_opt, l1 = l1_opt)
+
+cartesian_grid <- h2o.grid(algorithm = "deeplearning",
+                           hyper_params = hyper_params, 
+                           x=x, y=y,
+                           training_frame = train,
+                           validation_frame = valid)
+
+```
+
+##### Random grid search
+```{r}
+search_criteria <- list(strategy="RandomDiscrete", 
+                        max_runtime_secs=30)
+
+random_grid <- h2o.grid(algorithm = "deeplearning",
+                        hyper_params = hyper_params,
+                        search_criteria = search_criteria,
+                        x=x, y=y,
+                        training_frame=train,
+                        validation_frame=valid)
+```
+Click `getGrids` in H2O Flow to view the grids.  
+
+# 6.  The "h2oEnsemble" R package
+`h2o.ensemble` from the "h2oEnsemble" R package is helpful when you want to compare multiple models simultaneously like with the "SuperLearner" R package.  
+
+Create an object called `learner` in which we will store the models we want to compare.  
+
+The `metalearner` objects will "learn the optimal combination of the base learners" (see `?h2o.ensemble` for more information).
+```{r}
+library(h2oEnsemble)
+learner <- c("h2o.gbm.wrapper", "h2o.glm.wrapper", "h2o.randomForest.wrapper", "h2o.deeplearning.wrapper")
+metalearner <- c("h2o.glm.wrapper")
+
+fit <- h2o.ensemble(x = x, y = y, 
+                    training_frame = train, 
+                    family = family, 
+                    learner = learner, 
+                    metalearner = metalearner,
+                    cvControl = list(V = 5))
+```
+
+# 6.1 Model performance
+```{r}
+perf <- h2o.ensemble_performance(fit, newdata = test)
+perf
+
+print(perf, metric="MSE")
+
+pred <- predict(fit, newdata = test)
+pred
+
+#predictions <- as.data.frame(pred$pred)[,3]  #third column is P(Y==1)
+#labels <- as.data.frame(test[,y])[,1]
+```
+
+# 7.  Model stacking - random forest, gradient boosted machine, and elastic net regression
+Recreate the models.
+```{r}
+glm1 <- h2o.glm(x = x, y = y, family = family, 
+                training_frame = train,
+                nfolds = nfolds,
+                fold_assignment = "Modulo",
+                keep_cross_validation_predictions = TRUE)
+
+gbm1 <- h2o.gbm(x = x, y = y, distribution = "bernoulli",
+                training_frame = train,
+                seed = 1,
+                nfolds = nfolds,
+                fold_assignment = "Modulo",
+                keep_cross_validation_predictions = TRUE)
+
+rf1 <- h2o.randomForest(x = x, y = y, # distribution not used for RF
+                        training_frame = train,
+                        seed = 1,
+                        nfolds = nfolds,
+                        fold_assignment = "Modulo",
+                        keep_cross_validation_predictions = TRUE)
+
+dl1 <- h2o.deeplearning(x = x, y = y, distribution = "bernoulli",
+                        training_frame = train,
+                        nfolds = nfolds,
+                        fold_assignment = "Modulo",
+                        keep_cross_validation_predictions = TRUE)
+```
+
+Stack the models!
+```{r}
+models <- list(rf1, gbm1, glm1, dl1)
+metalearner <- "h2o.deeplearning.wrapper"
+
+stack <- h2o.stack(models=models,
+                   response_frame=train[,y],
+                   metalearner = metalearner,
+                   seed=1,
+                   keep_levelone_data = TRUE)
+
+perf.stack <- h2o.ensemble_performance(stack, newdata=test)
+perf.stack
+```
+
+# CHALLENGE: can you plug in the Pima Diabetes dataset and follow the flow of this script? 
