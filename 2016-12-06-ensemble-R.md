@@ -26,10 +26,17 @@ Learner](https://cran.r-project.org/web/packages/SuperLearner/index.html) R
 package and [H2O](http://www.h2o.ai) software platform, using the [R language
 for statistical computing](https://www.r-project.org).
 
+__Materials for this presentation are available on GitHub
+[here](https://github.com/nhejazi/talk-h2oSL-THW-2016)__.
 
 ### R & RStudio Installation
 * You can download R and RStudio
   [here](https://www.rstudio.com/products/rstudio/download/).
+
+### Jupyter R Kernel Installation
+* Please follow the instructions
+   [here](https://irkernel.github.io/installation/) to install an R kernel for
+   Jupyter notebooks.
 
 ### SuperLearner Installation
 ```r
