@@ -28,8 +28,8 @@ for statistical computing](https://www.r-project.org).
 
 
 ### R & RStudio Installation
-* You can download R and RStudio at
-  [here](https://www.rstudio.com/products/rstudio/download/)
+* You can download R and RStudio
+  [here](https://www.rstudio.com/products/rstudio/download/).
 
 ### SuperLearner Installation
 ```r
@@ -40,10 +40,16 @@ devtools::install_github("ecpolley/SuperLearner")
 ### H2O Installation
 These installations are required to make H2O work in RStudio. Click the links
 to visit the download pages.
+
 1. [Download RStudio](https://www.rstudio.com/products/rstudio/download/)
-2. [Download Java Runtime Environment](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
-3. [Download H2O for R and dependencies (click the "Use H2O directly from R" tab and follow the copy/paste instructions)](http://h2o-release.s3.amazonaws.com/h2o/rel-turing/10/index.html)
-4. Install "devtools" and "h2oEnsemble"" R packages.
+
+2. [Download Java Runtime
+    Environment](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
+
+3. [Download H2O for R and dependencies (click the "Use H2O directly from R"
+    tab and follow the copy/paste   instructions)](http://h2o-release.s3.amazonaws.com/h2o/rel-turing/10/index.html)
+
+4. Install the `devtools` and `h2oEnsemble` R packages.
 
 ```r
 # The following two commands remove any previously installed H2O packages for R.
