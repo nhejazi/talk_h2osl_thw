@@ -12,7 +12,7 @@ https://gitter.im/h2oSL-THW-2016/Lobby](https://badges.gitter.im/h2oSL-THW-2016/
 
 ## Description
 
-These are materials for a (working group) presentation given on methods for
+These are materials for a working group presentation given on methods for
 performing ensemble machine learning with [Super
 Learner](https://cran.r-project.org/web/packages/SuperLearner/index.html) and
 [H2O](http://www.h2o.ai) using the [R language for statistical

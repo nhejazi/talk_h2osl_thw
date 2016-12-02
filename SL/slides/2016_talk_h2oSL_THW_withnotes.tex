@@ -1,10 +1,12 @@
-\documentclass[12pt,t]{beamer}
+\documentclass[12pt,t,handout]{beamer}
 \usepackage{graphicx}
-\setbeameroption{hide notes}
+\setbeameroption{show notes}
 \setbeamertemplate{note page}[plain]
 \usepackage{listings}
 \usepackage{url}
 
+\graphicspath{ {Figs/} }
+\def\notescolors{1}
 \input{header.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -12,7 +14,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % title info
-\title{A Practical Tour of Ensemble (Machine) Learning}
+\title{A \textit{Practical} Tour of Ensemble (Machine) Learning}
 \author{Nima Hejazi \inst{1} \and Evan Muzzall \inst{2}}
 \institute{\inst{1} Division of Biostatistics, University of
                     California, Berkeley
@@ -28,7 +30,7 @@
 \frame{
   \titlepage
 
-  \vfill \hfill \includegraphics[height=6mm]{Figs/cc-zero.png} \vspace*{-1cm}
+  \vfill \hfill \includegraphics[height=6mm]{cc-zero.png} \vspace*{-1cm}
 
   \note{These are slides from a presentation on practical ensemble learning with
     the Super Learner and h2oEnsemble packages for the R language, most
@@ -43,7 +45,7 @@
 }
 
 
-\begin{frame}[fragile,c]{1. Ensemble Learning -- What?}
+\begin{frame}[fragile,c]{Ensemble Learning -- What?}
 
 \begin{center}
 \begin{minipage}[c]{9.3cm}
@@ -73,7 +75,7 @@
 \end{frame}
 
 
-\begin{frame}[c]{2. Ensemble Learning -- Why?}
+\begin{frame}[c]{Ensemble Learning -- Why?}
 
 \vspace*{3mm}
 
@@ -103,7 +105,7 @@
 \end{frame}
 
 
-\begin{frame}[c]{3. Ensemble Learning -- How?}
+\begin{frame}[c]{Ensemble Learning -- How?}
 
 \vspace*{3mm}
 
@@ -135,7 +137,7 @@
 \end{frame}
 
 
-\begin{frame}[c]{4. Introduction to Super Learner}
+\begin{frame}[c]{Introduction to Super Learner}
 
 \vspace*{3mm}
 
@@ -165,13 +167,13 @@
 \end{frame}
 
 
-\begin{frame}[c]{5. Interlude: Cross-Validation}
+\begin{frame}[c]{Interlude: Cross-Validation}
 
 \vspace*{2mm}
 
 \centering
 
-\includegraphics[scale=0.45]{Figs/cv.pdf}
+\includegraphics[scale=0.45]{cv.pdf}
 
 \textit{The validation set rotates V times such that each set is used as the
 validation set once.}
@@ -192,7 +194,7 @@ validation set once.}
 \end{frame}
 
 
-\begin{frame}[c]{6. Optimality of Super Learner}
+\begin{frame}[c]{Optimality of Super Learner}
 
 \vspace*{1mm}
 
@@ -220,29 +222,29 @@ validation set once.}
 \end{frame}
 
 
-\begin{frame}[c]{7. The Discrete Super Learner}
+\begin{frame}[c]{The Discrete Super Learner}
 
 \vspace*{3mm}
 
 \centering
 
-\includegraphics[scale=0.45]{Figs/discreteSL.pdf}
+\includegraphics[scale=0.45]{discreteSL.pdf}
 
 \note{
 }
 \end{frame}
 
 
-\begin{frame}[c]{8. The Super Learner Algorithm}
+\begin{frame}[c]{The Super Learner Algorithm}
 
 \vspace*{3mm}
 
 \centering
 
-\includegraphics[scale=0.4]{Figs/SL.pdf}
+\includegraphics[scale=0.4]{SL.pdf}
 
 \note{
-  \textit{Cross-validate Base Learners:}
+  \underline{1. Cross-validate base learners}:
     \begin{itemize}
       \itemsep10pt
       \item Perform k-fold cross-validation on each learner and collect the
@@ -252,7 +254,7 @@ validation set once.}
             this matrix, with the original response vector, ``level-one'' data.
     \end{itemize}
 
-  \textit{Metalearning:}
+  \underline{2. Metalearning}:
     \begin{itemize}
       \itemsep10pt
       \item Train the metalearning algorithm on the ``level-one'' data.
@@ -265,7 +267,20 @@ validation set once.}
 \end{frame}
 
 
-\begin{frame}[c]{9. R Package: ``SuperLearner''}
+\begin{frame}[c]{Ensembles with Super Learner}
+
+\vspace*{3mm}
+
+\centering
+
+\includegraphics[scale=0.55]{optimalSL.png}
+
+\note{
+}
+\end{frame}
+
+
+\begin{frame}[c]{R Package: ``SuperLearner''}
 
 \vspace*{3mm}
 
@@ -285,7 +300,7 @@ validation set once.}
 \end{frame}
 
 
-\begin{frame}{10. R Package: ``h2oEnsemble''}
+\begin{frame}{R Package: ``h2oEnsemble''}
 
 \vspace*{3mm}
 
@@ -336,12 +351,12 @@ algorithms in H2O.}
 \Large
 
 Slides: \url{http://goo.gl/wWa9QC} \quad
-\includegraphics[height=5mm]{Figs/cc-zero.png}
+\includegraphics[height=5mm]{cc-zero.png}
 
-\vspace{10mm}
+\vspace{15mm}
 
-\href{https://github.com/nhejazi/talk-h2oSL-THW-2016}
-{\tt GitHub: nhejazi/talk-h2oSL-THW-2016}
+GitHub: \href{https://github.com/nhejazi/talk-h2oSL-THW-2016}
+{\tt nhejazi/talk-h2oSL-THW-2016}
 
 \note{
   Here's where you can find the resources prepared for this talk.
