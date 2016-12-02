@@ -21,7 +21,55 @@ millennium BC). He is currently R Lead Instructor, co-founder of the Machine Lea
 
 ## Ensemble (Machine) Learning with Super Learner and H2O in R
 
-<+ notes +>
+This presentation covers methods for performing ensemble machine learning with the [Super
+Learner](https://cran.r-project.org/web/packages/SuperLearner/index.html) R
+package and [H2O](http://www.h2o.ai) software platform, using the [R language
+for statistical computing](https://www.r-project.org).
+
+
+### R & RStudio Installation
+* You can download R and RStudio at
+  [here](https://www.rstudio.com/products/rstudio/download/)
+
+### SuperLearner Installation
+```r
+require("devtools")
+devtools::install_github("ecpolley/SuperLearner")
+```
+
+### H2O Installation
+These installations are required to make H2O work in RStudio. Click the links
+to visit the download pages.
+1. [Download RStudio](https://www.rstudio.com/products/rstudio/download/)
+2. [Download Java Runtime Environment](http://www.oracle.com/technetwork/java/javase/downloads/jre8-downloads-2133155.html)
+3. [Download H2O for R and dependencies (click the "Use H2O directly from R" tab and follow the copy/paste instructions)](http://h2o-release.s3.amazonaws.com/h2o/rel-turing/10/index.html)
+4. Install "devtools" and "h2oEnsemble"" R packages.
+
+```r
+# The following two commands remove any previously installed H2O packages for R.
+if ("package:h2o" %in% search()) { detach("package:h2o", unload=TRUE) }
+if ("h2o" %in% rownames(installed.packages())) { remove.packages("h2o") }
+
+# Next, we download packages that H2O depends on.
+pkgs <- c("methods","statmod","stats","graphics","RCurl","jsonlite","tools","utils")
+for (pkg in pkgs) {
+if (! (pkg %in% rownames(installed.packages()))) { install.packages(pkg, repos = "http://cran.rstudio.com/") }
+}
+
+# Now we download, install and call the H2O package for R.
+install.packages("h2o", type="source", repos=(c("http://h2o-release.s3.amazonaws.com/h2o/rel-turing/10/R")))
+
+# Install the "devtools" R package.
+install.packages(c("devtools"))
+
+# Install the "h2oEnsemble" R package.
+install_github("h2oai/h2o-3/h2o-r/ensemble/h2oEnsemble-package")
+
+# Load packages
+library(h2o)
+library(devtools)
+library(h2oEnsemble)
+```
 
 ## Lightning Talks
 
