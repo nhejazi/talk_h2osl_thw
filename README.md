@@ -25,6 +25,12 @@ December 2016.
 
 ## Related
 
+* ["Machine Learning with R and
+    H2O"](http://docs.h2o.ai/h2o/latest-stable/h2o-docs/booklets/RBooklet.pdf)
+
+* [H2O Flow app for interactive web-based
+    computing](https://github.com/h2oai/h2o-flow)
+
 * ["How R Scripts Call H2O GLM" (H2O software architecture
     documentation)](http://h2o-release.s3.amazonaws.com/h2o/rel-lambert/5/docs-website/developuser/how_r_interacts_with_h2o.html)
 

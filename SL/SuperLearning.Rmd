@@ -8,14 +8,189 @@ output:
     toc_float: yes
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
-
-```{r}
-plot(cars)
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+# 1.  Preliminaries
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
+* In this walkthrough, we will examine how to use the `SuperLearner` R package
+by looking at the BreastCancer data set from the R package `mlbench`.
+
+* For convenience, the `BreastCancer` dataset is also available in CSV format in
+the data subdirectory of this repo.
+
+```{r}
+set.seed(654123) # reproducibility matters
+"%ni%" = Negate("%in%")
+
+# load some standard packages
+library(dplyr)
+library(ggplot2)
+library(mlbench)
+
+# load the data set
+data(BreastCancer)
+head(BreastCancer)
+```
+
+# 2.  Data Cleaning
+
+* Firstly, we need to transform our data matrix so that it can be easily passed
+to `SuperLearner`.
+
+* We'll do this with the `dplyr` package, which we loaded in the above section.
+
+```{r}
+# examine whether there are NAs in the data
+colSums(is.na(BreastCancer))
+```
+
+* `SuperLearner` __does not work with missing data__, so we will have to remove 
+incomplete observations.
+
+* There are several ways to handle missing data via imputation with
+`SuperLearner`, but those are outside the scope of this tutorial. Feel free to
+ask us after this workshop if you're interested in this.
+
+```{r}
+# remove the NAs before proceeding with Super Learner
+bc <- BreastCancer %>%
+ dplyr::filter(complete.cases(.))
+colSums(is.na(bc))
+```
+
+* Next, we'll need to remove the outcome column ("Class") and the metadata
+column ("ID") from the X matrix
+
+* Here, the X matrix is simply the observed values to be used in predicting the
+class outcome.
+
+```{r}
+# create a data.frame of covariates to be used in prediction
+X <- bc %>%
+ dplyr::select(which(colnames(.) %ni% c("Id", "Class")))
+head(X)
+```
+
+* We simply strip all columns other than the "Class" to create the outcome
+vector.
+
+* The vector of outcomes must be of class numeric for SuperLearner to work
+properly.
+
+```{r}
+# create a numeric vector of the binary outcomes.
+Y <- bc %>%
+ dplyr::select(which(colnames(.) %in% c("Class")))
+Y <- as.vector(ifelse(Y == "benign", 0, 1))
+unique(Y)
+```
+
+# 3.  The Super Learner Algorithm
+
+* __R package:__ `SuperLearner`
+
+* Main functions: `SuperLearner`, `CV.SuperLearner`
+
+To start, we will load the `SuperLearner` package and set up a library of
+learning algorithms that `SuperLearner` will combine into a single ensemble
+learner.
+
+For the purposes of this walkthrough, we'll keep the library of learning
+algorithms limited. Note that in practical cases, the number of learning
+algorithms should vary with the number of observations, and the bigger your
+library, the better you will capture the optimal relationship.
+
+```{r}
+library(SuperLearner)
+
+SL_library <- c("SL.gbm", "SL.glm", "SL.glmnet", "SL.knn", "SL.nnet", "SL.randomForest")
+```
+
+```{r}
+SL_fit <- SuperLearner(X = X,
+                       Y = Y,
+                       family = binomial(),
+                       SL.library = SL_library,
+                       verbose = FALSE
+                      )
+```
+
+```{r}
+SL_fit$coef
+```
+
+# 4.  The Cross-Validated Super Learner
+
+* Why would we want to cross-validate the ensembling process used by Super
+Learner?
+  * ...
+  * ...
+
+* Cross-validation guarantees that we can evaluate the Super Learner process 
+honestly.
+
+```{r}
+library(cvAUC)
+
+V = 5 # we'll use few folds here to save time
+
+cv_SL_fit <- CV.SuperLearner(X = X,
+                             Y = Y,
+                             V = V,
+                             family = binomial(),
+                             SL.library = SL_library,
+                             verbose = FALSE
+                            )
+```
+
+```{r}
+cv_SL_fit$coef
+```
+
+```{r}
+plot(cv_SL_fit)
+```
+
+```{r}
+fold = cv_SL_fit$fold
+predsY = cv_SL_fit$SL.predict
+
+n = length(predsY)
+folds = rep(NA, n)
+
+for(k in 1:V) {
+    ii = unlist(fold[k])
+    folds[ii] = k
+}
+
+ci_out = ci.cvAUC(predsY, Y, folds = folds)
+txt = paste("AUC = ", round(ci_out$cvAUC, 2),",
+            95% CI = ", round(ci_out$ci[1], 2), "-",
+            round(ci_out$ci[2], 2))
+```
+
+# 5.  Evaluating Classification Results
+
+* The [Receiver Operating Characteristic
+curve](https://en.wikipedia.org/wiki/Receiver_operating_characteristic) is a 
+standard way of evaluating the results of classification algorithms
+
+* Here, we use the ROCR package to visualize the results from the
+cross-validated Super Learner
+
+```{r}
+library(ROCR)
+
+pred <- prediction(predsY, Y)
+perf <- performance(pred, "sens", "spec")
+plot(1 - slot(perf, "x.values")[[1]],
+     slot(perf, "y.values")[[1]],
+     type = "s",
+     xlab = "1 - Specificity",
+     ylab = "Sensitivity",
+     main = "Receiver Operating Characteristic (ROC) Curve")
+text(0.75, 0.1, txt)
+abline(0, 1)
+```
