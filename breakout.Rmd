@@ -1,0 +1,27 @@
+---
+title: "Ensemble (Machine) Learning with SuperLearner and H2O in R"
+author: "Nima Hejazi and Evan Muzzall"
+date: "12/6//2016"
+output: 
+  html_document: 
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Learning objectives:
+1.  Breakout: The Pima Data Set
+2.  `SuperLearner` Exercises
+3.  `h2oEnsemble` Exercises  
+
+CHALLENGE: can you plug in the Pima Diabetes dataset and follow this script? 
+
+
+```{r}
+plot(cars)
+```
+
+

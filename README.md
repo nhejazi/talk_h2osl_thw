@@ -25,6 +25,9 @@ December 2016.
 
 ## Related
 
+* ["How R Scripts Call H2O GLM" (H2O software architecture
+    documentation)](http://h2o-release.s3.amazonaws.com/h2o/rel-lambert/5/docs-website/developuser/how_r_interacts_with_h2o.html)
+
 * ["High Performance Machine Learning in R with H2O" (presentation), E. LeDell,
   2015](http://www.stat.berkeley.edu/~ledell/docs/h2o_hpccon_oct2015.pdf)
 
