@@ -11786,6 +11786,7 @@ div#notebook {
 <span class="c1"># load the data set</span>
 data<span class="p">(</span>BreastCancer<span class="p">)</span>
 <span class="kp">head</span><span class="p">(</span>BreastCancer<span class="p">)</span>
+<span class="kp">dim</span><span class="p">(</span>BreastCancer<span class="p">)</span>
 </pre></div>
 
 </div>
@@ -11810,6 +11811,18 @@ data<span class="p">(</span>BreastCancer<span class="p">)</span>
 	<tr><td>1017122  </td><td>8        </td><td>10       </td><td>10       </td><td>8        </td><td>7        </td><td>10       </td><td>9        </td><td>7        </td><td>1        </td><td>malignant</td></tr>
 </tbody>
 </table>
+
+</div>
+
+</div>
+
+<div class="output_area"><div class="prompt"></div>
+
+<div class="output_html rendered_html output_subarea ">
+<ol class=list-inline>
+	<li>699</li>
+	<li>11</li>
+</ol>
 
 </div>
 
@@ -12225,17 +12238,17 @@ Warning message:
 <div class="output_html rendered_html output_subarea ">
 <dl class=dl-horizontal>
 	<dt>SL.gbm_All</dt>
-		<dd>0.0580497615089358</dd>
+		<dd>0.0580497403280504</dd>
 	<dt>SL.glm_All</dt>
-		<dd>0.0305779155266652</dd>
+		<dd>0.030577981798267</dd>
 	<dt>SL.glmnet_All</dt>
 		<dd>0</dd>
 	<dt>SL.knn_All</dt>
-		<dd>0.691537584044053</dd>
+		<dd>0.691537543264149</dd>
 	<dt>SL.nnet_All</dt>
 		<dd>0</dd>
 	<dt>SL.randomForest_All</dt>
-		<dd>0.219834738920346</dd>
+		<dd>0.219834734609533</dd>
 </dl>
 
 </div>
@@ -12261,14 +12274,20 @@ Warning message:
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <ul>
+<li><p>"Function to get V-fold cross-validated risk estimate for super learner. This 
+function simply splits the data into V folds and then calls <code>SuperLearner</code>."</p>
+</li>
 <li><p>Why would we want to cross-validate the ensembling process used by Super Learner?</p>
 <ul>
-<li>...</li>
-<li>...</li>
-<li>...</li>
+<li>The <code>SuperLearner</code> function builds an estimator, but does not contain an 
+estimate of the performance of that estimator.</li>
+<li>The authros recommend using cross-validation to evaluate the honest
+performance of the super learner estimator.</li>
 </ul>
 </li>
-<li><p>Cross-validation guarantees that we can evaluate the Super Learner process honestly</p>
+<li><p>The function <code>CV.SuperLearner</code> computes the usual V-fold cross-validated risk 
+estimate for the super learner (as well as that for each algorithm in the
+specified library for comparison).</p>
 </li>
 </ul>
 
@@ -12491,11 +12510,11 @@ cv_SL_fit <span class="o">&lt;-</span> CV.SuperLearner<span class="p">(</span>X 
 <table>
 <thead><tr><th></th><th scope=col>SL.gbm_All</th><th scope=col>SL.glm_All</th><th scope=col>SL.glmnet_All</th><th scope=col>SL.knn_All</th><th scope=col>SL.nnet_All</th><th scope=col>SL.randomForest_All</th></tr></thead>
 <tbody>
-	<tr><th scope=row>1</th><td>0.0000000  </td><td>0.000000000</td><td>0.000000000</td><td>0.6579005  </td><td>0.07731546 </td><td>0.2647841  </td></tr>
-	<tr><th scope=row>2</th><td>0.1967231  </td><td>0.000000000</td><td>0.004739998</td><td>0.1755384  </td><td>0.03938415 </td><td>0.5836144  </td></tr>
-	<tr><th scope=row>3</th><td>0.0000000  </td><td>0.000000000</td><td>0.000000000</td><td>0.6580631  </td><td>0.00000000 </td><td>0.3419369  </td></tr>
-	<tr><th scope=row>4</th><td>0.0000000  </td><td>0.000000000</td><td>0.000000000</td><td>0.6719637  </td><td>0.05121414 </td><td>0.2768221  </td></tr>
-	<tr><th scope=row>5</th><td>0.3582016  </td><td>0.006590333</td><td>0.000000000</td><td>0.5168597  </td><td>0.00000000 </td><td>0.1183484  </td></tr>
+	<tr><th scope=row>1</th><td>0.0000000  </td><td>0.00000000 </td><td>0.000000000</td><td>0.6579005  </td><td>0.07731546 </td><td>0.2647841  </td></tr>
+	<tr><th scope=row>2</th><td>0.1967231  </td><td>0.00000000 </td><td>0.004739998</td><td>0.1755384  </td><td>0.03938415 </td><td>0.5836144  </td></tr>
+	<tr><th scope=row>3</th><td>0.0000000  </td><td>0.00000000 </td><td>0.000000000</td><td>0.6580631  </td><td>0.00000000 </td><td>0.3419369  </td></tr>
+	<tr><th scope=row>4</th><td>0.0000000  </td><td>0.00000000 </td><td>0.000000000</td><td>0.6719637  </td><td>0.05121414 </td><td>0.2768221  </td></tr>
+	<tr><th scope=row>5</th><td>0.3582016  </td><td>0.00659032 </td><td>0.000000000</td><td>0.5168597  </td><td>0.00000000 </td><td>0.1183484  </td></tr>
 </tbody>
 </table>
 
@@ -13333,7 +13352,7 @@ fold <span class="o">=</span> <span class="kp">rep</span><span class="p">(</span
 <span class="p">}</span>
 
 ci_out <span class="o">=</span> ci.cvAUC<span class="p">(</span>predsY<span class="p">,</span> Y<span class="p">,</span> folds <span class="o">=</span> fold<span class="p">)</span>
-txt <span class="o">=</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;AUC = &quot;</span><span class="p">,</span> <span class="kp">round</span><span class="p">(</span>ci_out<span class="o">$</span>cvAUC<span class="p">,</span> <span class="m">2</span><span class="p">),</span><span class="s">&quot;, 95% CI = &quot;</span><span class="p">,</span> <span class="kp">round</span><span class="p">(</span>ci_out<span class="o">$</span>ci<span class="p">[</span><span class="m">1</span><span class="p">],</span> <span class="m">2</span><span class="p">),</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> <span class="kp">round</span><span class="p">(</span>ciout<span class="o">$</span>ci<span class="p">[</span><span class="m">2</span><span class="p">],</span> <span class="m">2</span><span class="p">))</span>
+txt <span class="o">=</span> <span class="kp">paste</span><span class="p">(</span><span class="s">&quot;AUC = &quot;</span><span class="p">,</span> <span class="kp">round</span><span class="p">(</span>ci_out<span class="o">$</span>cvAUC<span class="p">,</span> <span class="m">2</span><span class="p">),</span><span class="s">&quot;, 95% CI = &quot;</span><span class="p">,</span> <span class="kp">round</span><span class="p">(</span>ci_out<span class="o">$</span>ci<span class="p">[</span><span class="m">1</span><span class="p">],</span> <span class="m">2</span><span class="p">),</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> <span class="kp">round</span><span class="p">(</span>ci_out<span class="o">$</span>ci<span class="p">[</span><span class="m">2</span><span class="p">],</span> <span class="m">2</span><span class="p">))</span>
 </pre></div>
 
 </div>
@@ -13358,7 +13377,7 @@ txt <span class="o">=</span> <span class="kp">paste</span><span class="p">(</spa
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="kn">library</span><span class="p">(</span>ROCR<span class="p">)</span>

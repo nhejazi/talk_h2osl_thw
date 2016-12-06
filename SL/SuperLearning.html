@@ -221,7 +221,6 @@ div.tocify {
 </div>
 
 
-<p>Topic Roadmap/Outline 1. Preliminaries 2. Data Cleaning 3. The Super Learner Algorithm 4. The Cross-Validated Super Learner 5. Evaluating Classificatino Results</p>
 <div id="preliminaries" class="section level1">
 <h1>1. Preliminaries</h1>
 <ul>
@@ -328,7 +327,8 @@ unique(Y)</code></pre>
 <pre><code>## Super Learner</code></pre>
 <pre><code>## Version: 2.0-21</code></pre>
 <pre><code>## Package created on 2016-11-11</code></pre>
-<pre class="r"><code>SL_library &lt;- c(&quot;SL.gbm&quot;, &quot;SL.glm&quot;, &quot;SL.glmnet&quot;, &quot;SL.knn&quot;, &quot;SL.nnet&quot;, &quot;SL.randomForest&quot;)</code></pre>
+<pre class="r"><code>SL_library &lt;- c(&quot;SL.gbm&quot;, &quot;SL.glm&quot;, &quot;SL.glmnet&quot;, &quot;SL.knn&quot;, &quot;SL.nnet&quot;, 
+                &quot;SL.randomForest&quot;)</code></pre>
 <pre class="r"><code>SL_fit &lt;- SuperLearner(X = X,
                        Y = Y,
                        family = binomial(),
@@ -384,15 +384,16 @@ unique(Y)</code></pre>
 <pre><code>##          SL.gbm_All          SL.glm_All       SL.glmnet_All 
 ##          0.05804974          0.03057798          0.00000000 
 ##          SL.knn_All         SL.nnet_All SL.randomForest_All 
-##          0.69153754          0.00000000          0.21983473</code></pre>
+##          0.69153755          0.00000000          0.21983473</code></pre>
 </div>
 <div id="the-cross-validated-super-learner" class="section level1">
 <h1>4. The Cross-Validated Super Learner</h1>
 <ul>
+<li><p>“Function to get V-fold cross-validated risk estimate for super learner. This function simply splits the data into V folds and then calls <code>SuperLearner</code>.”</p></li>
 <li>Why would we want to cross-validate the ensembling process used by Super Learner?</li>
-<li>…</li>
-<li><p>…</p></li>
-<li><p>Cross-validation guarantees that we can evaluate the Super Learner process honestly.</p></li>
+<li>The <code>SuperLearner</code> function builds an estimator, but does not contain an estimate of the performance of that estimator.</li>
+<li><p>The authros recommend using cross-validation to evaluate the honest performance of the super learner estimator.</p></li>
+<li><p>The function <code>CV.SuperLearner</code> computes the usual V-fold cross-validated risk estimate for the super learner (as well as that for each algorithm in the specified library for comparison).</p></li>
 </ul>
 <pre class="r"><code>library(cvAUC)</code></pre>
 <pre><code>## Loading required package: ROCR</code></pre>
@@ -537,7 +538,7 @@ cv_SL_fit &lt;- CV.SuperLearner(X = X,
 ## 2  0.1967231 0.000000000   0.004739998  0.1755384  0.03938415
 ## 3  0.0000000 0.000000000   0.000000000  0.6580631  0.00000000
 ## 4  0.0000000 0.000000000   0.000000000  0.6719637  0.05121414
-## 5  0.3582016 0.006590332   0.000000000  0.5168597  0.00000000
+## 5  0.3582016 0.006590319   0.000000000  0.5168597  0.00000000
 ##   SL.randomForest_All
 ## 1           0.2647841
 ## 2           0.5836144
@@ -562,8 +563,8 @@ txt = paste(&quot;AUC = &quot;, round(ci_out$cvAUC, 2),&quot;,
             95% CI = &quot;, round(ci_out$ci[1], 2), &quot;-&quot;,
             round(ci_out$ci[2], 2))</code></pre>
 </div>
-<div id="evaluating-classificatino-results" class="section level1">
-<h1>5. Evaluating Classificatino Results</h1>
+<div id="evaluating-classification-results" class="section level1">
+<h1>5. Evaluating Classification Results</h1>
 <ul>
 <li><p>The <a href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic">Receiver Operating Characteristic curve</a> is a standard way of evaluating the results of classification algorithms</p></li>
 <li><p>Here, we use the ROCR package to visualize the results from the cross-validated Super Learner</p></li>

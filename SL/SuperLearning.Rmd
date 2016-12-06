@@ -105,7 +105,8 @@ library, the better you will capture the optimal relationship.
 ```{r}
 library(SuperLearner)
 
-SL_library <- c("SL.gbm", "SL.glm", "SL.glmnet", "SL.knn", "SL.nnet", "SL.randomForest")
+SL_library <- c("SL.gbm", "SL.glm", "SL.glmnet", "SL.knn", "SL.nnet", 
+                "SL.randomForest")
 ```
 
 ```{r}
@@ -123,13 +124,19 @@ SL_fit$coef
 
 # 4.  The Cross-Validated Super Learner
 
+* "Function to get V-fold cross-validated risk estimate for super learner. This 
+function simply splits the data into V folds and then calls `SuperLearner`."
+
 * Why would we want to cross-validate the ensembling process used by Super
 Learner?
-  * ...
-  * ...
+  * The `SuperLearner` function builds an estimator, but does not contain an 
+    estimate of the performance of that estimator.
+  * The authros recommend using cross-validation to evaluate the honest
+    performance of the super learner estimator.
 
-* Cross-validation guarantees that we can evaluate the Super Learner process 
-honestly.
+* The function `CV.SuperLearner` computes the usual V-fold cross-validated risk 
+estimate for the super learner (as well as that for each algorithm in the
+specified library for comparison).
 
 ```{r}
 library(cvAUC)
